@@ -1,59 +1,55 @@
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Queue;
 
-class Solution {
-    static class WordNode {
-        String word;
-        int depth;
+class Node {
+    String word;
+    int distance;
 
-        WordNode(String word, int depth) {
-            this.word = word;
-            this.depth = depth;
-        }
+    public Node(String word, int distance) {
+        this.word = word;
+        this.distance = distance;
     }
+}
 
-    public int solution(String begin, String target, String[] words) {
+class Solution {
+        public static int solution(String begin, String target, String[] words) {
         if (!Arrays.asList(words).contains(target)) {
             return 0;
         }
 
-        Queue<WordNode> queue = new LinkedList<>();
         boolean[] visited = new boolean[words.length];
 
-        queue.offer(new WordNode(begin,0));
+        Queue<Node> queue = new ArrayDeque<>();
+        queue.offer(new Node(begin, 1));
 
-        while(!queue.isEmpty()){
-            WordNode current = queue.poll();
-            String currentWord = current.word;
-            int currentDepth  = current.depth;
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
 
-            if(currentWord.equals(target)){
-                return currentDepth;
-            }
+            for (int i = 0; i < words.length; i++) {
+                if (!visited[i] && wordCheck(node.word, words[i])) {
+                    if (words[i].equals(target)) {
+                        return node.distance;
+                    }
 
-            for(int i = 0; i < words.length; i++){
-                if(!visited[i] && canTransform(currentWord, words[i])){
+                    queue.offer(new Node(words[i], node.distance + 1));
                     visited[i] = true;
-                    queue.offer(new WordNode(words[i], currentDepth + 1));
                 }
             }
         }
-
         return 0;
     }
 
-    private boolean canTransform(String word1, String word2){
-        int diffCount = 0;
-        for(int i = 0; i< word1.length(); i++){
-            if(word1.charAt(i) != word2.charAt(i)){
-                diffCount++;
-
-                if(diffCount > 1){
-                    return false;
-                }
+    private static boolean wordCheck(String word1, String word2) {
+        int different = 0;
+        for (int i = 0; i < word1.length(); i++) {
+            if (word1.charAt(i) != word2.charAt(i)) {
+                different++;
             }
+
+            if (different > 1) return false;
         }
-        return diffCount == 1;
+
+        return true;
     }
 }
