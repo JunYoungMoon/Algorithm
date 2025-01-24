@@ -14,7 +14,6 @@ class Dungeon {
 
 class Solution {
     List<Dungeon> list;
-    int maxDepth = 0;
 
     public int solution(int k, int[][] dungeons) {
         list = new ArrayList<>();
@@ -23,23 +22,24 @@ class Solution {
             list.add(new Dungeon(dungeon[0], dungeon[1]));
         }
 
-        dfs(k, 0);
-
-        return maxDepth;
+        return dfs(k, 0);
     }
 
-    private void dfs(int remainingFatigue, int depth) {
+    private int dfs(int remainingFatigue, int depth) {
+        int maxDepth = depth;
+
         for (Dungeon dungeon : list) {
             if (!dungeon.isVisited && remainingFatigue >= dungeon.minFatigue) {
                 dungeon.isVisited = true;
-                depth++;
-                if (depth > maxDepth) {
-                    maxDepth = depth;
-                }
-                dfs(remainingFatigue - dungeon.fatigueCost, depth);
+
+                maxDepth = Math.max(
+                        maxDepth,
+                        dfs(remainingFatigue - dungeon.fatigueCost, depth + 1)
+                );
                 dungeon.isVisited = false;
-                depth--;
+
             }
         }
+        return maxDepth;
     }
 }
